@@ -30,6 +30,10 @@ import org.xml.sax.SAXException;
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
+/**
+ * XML 实体解析器
+ * 加载本地的 mybatis-3-config.dtd 和 mybatis-3-mapper.dtd
+ */
 public class XMLMapperEntityResolver implements EntityResolver {
 
   private static final String IBATIS_CONFIG_SYSTEM = "ibatis-3-config.dtd";
