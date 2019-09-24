@@ -34,14 +34,28 @@ import org.apache.ibatis.transaction.TransactionException;
  * @author Clinton Begin
  *
  * @see JdbcTransactionFactory
+ *
+ * 实现 Transaction 接口，基于 JDBC 的事务实现类
  */
 public class JdbcTransaction implements Transaction {
 
   private static final Log log = LogFactory.getLog(JdbcTransaction.class);
 
+  /**
+   * Connection 对象
+   */
   protected Connection connection;
+  /**
+   * DataSource 对象
+   */
   protected DataSource dataSource;
+  /**
+   * 事务隔离级别
+   */
   protected TransactionIsolationLevel level;
+  /**
+   * 是否自动提交
+   */
   protected boolean autoCommit;
 
   public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
@@ -93,6 +107,11 @@ public class JdbcTransaction implements Transaction {
     }
   }
 
+  /**
+   * 设置指定的 autoCommit 属性
+   *
+   * @param desiredAutoCommit 指定的 autoCommit 属性
+   */
   protected void setDesiredAutoCommit(boolean desiredAutoCommit) {
     try {
       if (connection.getAutoCommit() != desiredAutoCommit) {
@@ -109,7 +128,9 @@ public class JdbcTransaction implements Transaction {
           + "Requested setting: " + desiredAutoCommit + ".  Cause: " + e, e);
     }
   }
-
+  /**
+   * 重置 autoCommit 属性
+   */
   protected void resetAutoCommit() {
     try {
       if (!connection.getAutoCommit()) {
@@ -131,6 +152,11 @@ public class JdbcTransaction implements Transaction {
     }
   }
 
+  /**
+   * 获得 Connection 对象
+   *
+   * @throws SQLException 获得失败
+   */
   protected void openConnection() throws SQLException {
     if (log.isDebugEnabled()) {
       log.debug("Opening JDBC Connection");

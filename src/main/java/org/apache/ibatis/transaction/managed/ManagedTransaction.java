@@ -33,14 +33,30 @@ import org.apache.ibatis.transaction.Transaction;
  * @author Clinton Begin
  *
  * @see ManagedTransactionFactory
+ *
+ * 实现 Transaction 接口，基于容器管理的事务实现类
  */
 public class ManagedTransaction implements Transaction {
 
   private static final Log log = LogFactory.getLog(ManagedTransaction.class);
 
+  /**
+   * Connection 对象
+   */
   private DataSource dataSource;
+  /**
+   * 事务级别
+   */
   private TransactionIsolationLevel level;
+  /**
+   * 连接级别
+   */
   private Connection connection;
+  /**
+   * 是否关闭连接
+   *
+   * 这个属性是和 {@link org.apache.ibatis.transaction.jdbc.JdbcTransaction} 不同的
+   */
   private final boolean closeConnection;
 
   public ManagedTransaction(Connection connection, boolean closeConnection) {

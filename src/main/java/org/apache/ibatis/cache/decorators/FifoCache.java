@@ -25,11 +25,21 @@ import org.apache.ibatis.cache.Cache;
  * FIFO (first in, first out) cache decorator.
  *
  * @author Clinton Begin
+ *
+ * 基于先进先出的淘汰机制的 Cache 实现类
  */
 public class FifoCache implements Cache {
-
+  /**
+   * 装饰的 Cache 对象
+   */
   private final Cache delegate;
+  /**
+   * 双端队列，记录缓存键的添加
+   */
   private final Deque<Object> keyList;
+  /**
+   * 队列上限
+   */
   private int size;
 
   public FifoCache(Cache delegate) {
