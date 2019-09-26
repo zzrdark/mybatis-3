@@ -32,11 +32,15 @@ import java.util.Properties;
  */
 public class Resources {
 
+  /**
+   * ClassLoaderWrapper 对象
+   */
   private static ClassLoaderWrapper classLoaderWrapper = new ClassLoaderWrapper();
 
   /**
    * Charset to use when calling getResourceAsReader.
    * null means use the system default.
+   * 字符集
    */
   private static Charset charset;
 
@@ -58,6 +62,7 @@ public class Resources {
    * @param defaultClassLoader - the new default ClassLoader
    */
   public static void setDefaultClassLoader(ClassLoader defaultClassLoader) {
+    // 修改 ClassLoaderWrapper
     classLoaderWrapper.defaultClassLoader = defaultClassLoader;
   }
 
@@ -125,6 +130,8 @@ public class Resources {
    */
   public static Properties getResourceAsProperties(String resource) throws IOException {
     Properties props = new Properties();
+
+    // 读取
     try (InputStream in = getResourceAsStream(resource)) {
       props.load(in);
     }
@@ -141,6 +148,7 @@ public class Resources {
    */
   public static Properties getResourceAsProperties(ClassLoader loader, String resource) throws IOException {
     Properties props = new Properties();
+    // 读取
     try (InputStream in = getResourceAsStream(loader, resource)) {
       props.load(in);
     }

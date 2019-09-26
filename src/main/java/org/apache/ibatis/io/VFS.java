@@ -193,6 +193,7 @@ public abstract class VFS {
    * @param path The path of the resource(s) to list.
    * @return A list containing the names of the child resources.
    * @throws IOException If I/O errors occur
+   * 找到所有资源
    */
   public List<String> list(String path) throws IOException {
     List<String> names = new ArrayList<>();

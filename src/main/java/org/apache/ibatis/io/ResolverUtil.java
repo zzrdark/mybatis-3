@@ -54,6 +54,7 @@ import org.apache.ibatis.logging.LogFactory;
  * Collection&lt;ActionBean&gt; beans = resolver.getClasses();
  * </pre>
  *
+ * 解析器工具类，用于获得指定目录符合条件的类们
  * @author Tim Fennell
  */
 public class ResolverUtil<T> {
@@ -77,6 +78,8 @@ public class ResolverUtil<T> {
   /**
    * A Test that checks to see if each class is assignable to the provided class. Note
    * that this test will match the parent type itself if it is presented for matching.
+   *
+   * 指定类
    */
   public static class IsA implements Test {
     private Class<?> parent;
@@ -101,7 +104,10 @@ public class ResolverUtil<T> {
   /**
    * A Test that checks to see if each class is annotated with a specific annotation. If it
    * is, then the test returns true, otherwise false.
-   */
+   *
+   *  注解
+   *
+   **/
   public static class AnnotatedWith implements Test {
     private Class<? extends Annotation> annotation;
 
@@ -122,7 +128,9 @@ public class ResolverUtil<T> {
     }
   }
 
-  /** The set of matches being accumulated. */
+  /** The set of matches being accumulated.
+   * 符合条件的类的集合
+   */
   private Set<Class<? extends T>> matches = new HashSet<>();
 
   /**
@@ -169,6 +177,8 @@ public class ResolverUtil<T> {
    *
    * @param parent the class of interface to find subclasses or implementations of
    * @param packageNames one or more package names to scan (including subpackages) for classes
+   * 指定类
+   * 断指定目录下们，符合指定类的类们
    */
   public ResolverUtil<T> findImplementations(Class<?> parent, String... packageNames) {
     if (packageNames == null) {
@@ -189,6 +199,8 @@ public class ResolverUtil<T> {
    *
    * @param annotation the annotation that should be present on matching classes
    * @param packageNames one or more package names to scan (including subpackages) for classes
+   *
+   * 判断指定目录下们，符合指定注解的类们
    */
   public ResolverUtil<T> findAnnotated(Class<? extends Annotation> annotation, String... packageNames) {
     if (packageNames == null) {
@@ -214,6 +226,7 @@ public class ResolverUtil<T> {
    *        classes, e.g. {@code net.sourceforge.stripes}
    */
   public ResolverUtil<T> find(Test test, String packageName) {
+    // 获得包的路径
     String path = getPackagePath(packageName);
 
     try {
@@ -250,6 +263,7 @@ public class ResolverUtil<T> {
   @SuppressWarnings("unchecked")
   protected void addIfMatching(Test test, String fqn) {
     try {
+      // 转换分隔符
       String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
       ClassLoader loader = getClassLoader();
       if (log.isDebugEnabled()) {
@@ -258,6 +272,7 @@ public class ResolverUtil<T> {
 
       Class<?> type = loader.loadClass(externalName);
       if (test.matches(type)) {
+        // 符合的类型
         matches.add((Class<T>) type);
       }
     } catch (Throwable t) {
