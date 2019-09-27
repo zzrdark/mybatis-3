@@ -26,7 +26,9 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
+// 作用在参数上
 @Target(ElementType.PARAMETER)
 public @interface Param {
+  // 参数名
   String value();
 }

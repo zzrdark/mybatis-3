@@ -25,8 +25,11 @@ import java.lang.annotation.Target;
  * @author Clinton Begin
  */
 @Documented
+// 运行时
 @Retention(RetentionPolicy.RUNTIME)
+// 作用在方法上
 @Target(ElementType.METHOD)
 public @interface Select {
+  // 查询语句
   String[] value();
 }

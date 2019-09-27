@@ -40,6 +40,7 @@ public @interface CacheNamespaceRef {
   Class<?> value() default void.class;
 
   /**
+   * 指向的命名空间
    * A namespace name to reference a cache.
    * @since 3.4.2
    */
