@@ -36,9 +36,15 @@ public abstract class VFS {
   private static final Log log = LogFactory.getLog(VFS.class);
 
   /** The built-in implementations. */
+  /**
+   * 内置的 VFS 实现类的数组
+   */
   public static final Class<?>[] IMPLEMENTATIONS = { JBoss6VFS.class, DefaultVFS.class };
 
   /** The list to which implementations are added by {@link #addImplClass(Class)}. */
+  /**
+   * 自定义的 VFS 实现类的数组
+   */
   public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<>();
 
   /** Singleton instance holder. */
@@ -53,6 +59,7 @@ public abstract class VFS {
       impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));
 
       // Try each implementation class until a valid one is found
+      // 创建 VFS 对象，选择最后一个符合的
       VFS vfs = null;
       for (int i = 0; vfs == null || !vfs.isValid(); i++) {
         Class<? extends VFS> impl = impls.get(i);
@@ -99,6 +106,11 @@ public abstract class VFS {
   }
 
   /** Get a class by name. If the class is not found then return null. */
+  /**
+   * 获取类
+   * @param className
+   * @return
+   */
   protected static Class<?> getClass(String className) {
     try {
       return Thread.currentThread().getContextClassLoader().loadClass(className);
@@ -113,10 +125,10 @@ public abstract class VFS {
 
   /**
    * Get a method by name and parameter types. If the method is not found then return null.
-   *
+   * 获取方法
    * @param clazz The class to which the method belongs.
    * @param methodName The name of the method.
-   * @param parameterTypes The types of the parameters accepted by the method.
+   * @param parameterTypes The types of the parameters accepted by the method
    */
   protected static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
     if (clazz == null) {
@@ -135,7 +147,7 @@ public abstract class VFS {
 
   /**
    * Invoke a method on an object and return whatever it returns.
-   *
+   * 调用方法
    * @param method The method to invoke.
    * @param object The instance or class (for static methods) on which to invoke the method.
    * @param parameters The parameters to pass to the method.
@@ -172,12 +184,16 @@ public abstract class VFS {
   }
 
   /** Return true if the {@link VFS} implementation is valid for the current environment. */
+  /**
+   * 抽象 是否合法
+   * @return
+   */
   public abstract boolean isValid();
 
   /**
    * Recursively list the full resource path of all the resources that are children of the
    * resource identified by a URL.
-   *
+   * 抽象 查看指定路径下的资源
    * @param url The URL that identifies the resource to list.
    * @param forPath The path to the resource that is identified by the URL. Generally, this is the
    *            value passed to {@link #getResources(String)} to get the resource URL.
@@ -189,7 +205,7 @@ public abstract class VFS {
   /**
    * Recursively list the full resource path of all the resources that are children of all the
    * resources found at the specified path.
-   *
+   * 查看指定路径下的资源
    * @param path The path of the resource(s) to list.
    * @return A list containing the names of the child resources.
    * @throws IOException If I/O errors occur

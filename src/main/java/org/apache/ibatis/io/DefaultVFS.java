@@ -36,7 +36,7 @@ import org.apache.ibatis.logging.LogFactory;
 
 /**
  * A default implementation of {@link VFS} that works for most application servers.
- *
+ * VFS 抽象类，默认的 VFS 实现类
  * @author Ben Gunter
  */
 public class DefaultVFS extends VFS {
@@ -50,6 +50,13 @@ public class DefaultVFS extends VFS {
     return true;
   }
 
+  /**
+   *
+   * @param url The URL that identifies the resource to list.
+   * @param path
+   * @return
+   * @throws IOException
+   */
   @Override
   public List<String> list(URL url, String path) throws IOException {
     InputStream is = null;
@@ -58,15 +65,19 @@ public class DefaultVFS extends VFS {
 
       // First, try to find the URL of a JAR file containing the requested resource. If a JAR
       // file is found, then we'll list child resources by reading the JAR.
+      // 如果 url 指向的是 Jar Resource ，则返回该 Jar Resource ，否则返回 null
       URL jarUrl = findJarForResource(url);
+      // 不为空
       if (jarUrl != null) {
         is = jarUrl.openStream();
         if (log.isDebugEnabled()) {
           log.debug("Listing " + url);
         }
+        // 遍历 Jar Resource
         resources = listResources(new JarInputStream(is), path);
       }
       else {
+        // jarUrl 为 空
         List<String> children = new ArrayList<>();
         try {
           if (isJar(url)) {
@@ -94,6 +105,7 @@ public class DefaultVFS extends VFS {
              * the class loader as a child of the current resource. If any line fails
              * then we assume the current resource is not a directory.
              */
+            //  获得路径下的所有资源
             is = url.openStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             List<String> lines = new ArrayList<>();
@@ -141,11 +153,13 @@ public class DefaultVFS extends VFS {
 
         // The URL prefix to use when recursively listing child resources
         String prefix = url.toExternalForm();
+        // 加 /
         if (!prefix.endsWith("/")) {
           prefix = prefix + "/";
         }
 
         // Iterate over immediate children, adding files and recursing into directories
+        // 遍历子路径
         for (String child : children) {
           String resourcePath = path + "/" + child;
           resources.add(resourcePath);
@@ -169,7 +183,7 @@ public class DefaultVFS extends VFS {
   /**
    * List the names of the entries in the given {@link JarInputStream} that begin with the
    * specified {@code path}. Entries will match with or without a leading slash.
-   *
+   * 获取jar 的所有资源
    * @param jar The JAR input stream
    * @param path The leading path to match
    * @return The names of all the matching entries
@@ -186,6 +200,7 @@ public class DefaultVFS extends VFS {
 
     // Iterate over the entries and collect those that begin with the requested path
     List<String> resources = new ArrayList<>();
+    // 迭代
     for (JarEntry entry; (entry = jar.getNextJarEntry()) != null;) {
       if (!entry.isDirectory()) {
         // Add leading slash if it's missing
@@ -223,6 +238,8 @@ public class DefaultVFS extends VFS {
     }
 
     // If the file part of the URL is itself a URL, then that URL probably points to the JAR
+    // 这段代码看起来比较神奇，虽然看起来没有 break 的条件，但是是通过 MalformedURLException 异常进行
+    // 正如上面英文注释，如果 URL 的文件部分本身就是 URL ，那么该 URL 可能指向 JAR
     try {
       for (;;) {
         url = new URL(url.getFile());
@@ -244,6 +261,7 @@ public class DefaultVFS extends VFS {
       }
     }
     else {
+      // 不以 jar 结尾 则返回null
       if (log.isDebugEnabled()) {
         log.debug("Not a JAR: " + jarUrl);
       }
@@ -253,6 +271,7 @@ public class DefaultVFS extends VFS {
     // Try to open and test it
     try {
       URL testUrl = new URL(jarUrl.toString());
+      // 判断是否为 Jar 文件
       if (isJar(testUrl)) {
         return testUrl;
       }
@@ -261,10 +280,14 @@ public class DefaultVFS extends VFS {
         if (log.isDebugEnabled()) {
           log.debug("Not a JAR: " + jarUrl);
         }
+        // 替换路径
         jarUrl.replace(0, jarUrl.length(), testUrl.getFile());
+        // 封装为文件
         File file = new File(jarUrl.toString());
 
         // File name might be URL-encoded
+        // 找不到文件 则
+        // 处理路径编码问题
         if (!file.exists()) {
           try {
             file = new File(URLEncoder.encode(jarUrl.toString(), "UTF-8"));
@@ -278,6 +301,7 @@ public class DefaultVFS extends VFS {
             log.debug("Trying real file: " + file.getAbsolutePath());
           }
           testUrl = file.toURI().toURL();
+          // 判断是否为 Jar 文件
           if (isJar(testUrl)) {
             return testUrl;
           }
@@ -324,7 +348,9 @@ public class DefaultVFS extends VFS {
     InputStream is = null;
     try {
       is = url.openStream();
+      // 读取头文件
       is.read(buffer, 0, JAR_MAGIC.length);
+      // 判断文件头的 magic number
       if (Arrays.equals(buffer, JAR_MAGIC)) {
         if (log.isDebugEnabled()) {
           log.debug("Found JAR: " + url);
